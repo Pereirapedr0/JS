@@ -1,3 +1,4 @@
+const { KeyObject } = require('node:crypto');
 const readline = require('node:readline');
 
 const estoque = {
@@ -68,10 +69,10 @@ const rl = readline.createInterface({
 
 function questionInLoop() {
   rl.question(`What's your order?`, pedido => {
-    
+
     const temNoEstoque = verificarDisponibilidade(pedido);
-    somarPreco();
     diminuirEstoque(pedido);
+    console.log("o valor do seu pedido é", precoPedido(pedido));
     if (temNoEstoque) {
       console.log('Tudo bem, vou preparar seu pedido.')
     }
@@ -113,10 +114,25 @@ function verificarDisponibilidade(pedido) {
   return disponivel;
 };
 
-function somarPreco() {
-
-};
-
+function precoPedido(pedido) {
+  let preco = 0;
+  const valorHamburguer = cardapio.hamburguer.preco;
+  const valorCheesburguer = cardapio.cheesburguer.preco;
+  const valorxBacon = cardapio.xbacon.preco;
+  switch (pedido) {
+    case 'hamburguer':
+      preco = valorHamburguer;
+      break;
+    case 'cheesburguer':
+      preco = valorCheesburguer;
+      break;
+    case 'xbacon':
+      preco = valorxBacon;
+      break;
+      
+  };
+return preco;
+}
 function diminuirEstoque(pedido) {
 
   estoque.comida.pao = cardapio[pedido].ingredientes.pao ? estoque.comida.pao - cardapio[pedido].ingredientes.pao : estoque.comida.pao;
@@ -125,9 +141,8 @@ function diminuirEstoque(pedido) {
   estoque.comida.bacon = cardapio[pedido].ingredientes.bacon ? estoque.comida.bacon - cardapio[pedido].ingredientes.bacon : estoque.comida.bacon;
   estoque.comida.alface = cardapio[pedido].ingredientes.alface ? estoque.comida.alface - cardapio[pedido].ingredientes.alface : estoque.comida.alface;
   estoque.comida.tomate = cardapio[pedido].ingredientes.tomate ? estoque.comida.tomate - cardapio[pedido].ingredientes.tomate : estoque.comida.tomate;
-  console.log(estoque)
+
 };
-// fazer funcionar para todos os pedidos
-// subtrair do estoque > outra funcão
-// calcular preço
+
+
 
