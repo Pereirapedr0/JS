@@ -66,23 +66,53 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-
-function questionInLoop() {
-  rl.question(`What's your order?`, pedido => {
-
-    const temNoEstoque = verificarDisponibilidade(pedido);
-    diminuirEstoque(pedido);
-    console.log("o valor do seu pedido é", precoPedido(pedido));
-    if (temNoEstoque) {
-      console.log('Tudo bem, vou preparar seu pedido.')
+let pedido = {
+  items: [{}],
+};
+async function solicitarPedido() {
+  rl.question(`What's your order?`, pedidoAtual => {
+    switch (pedidoAtual) {
+      case 'hamburguer':
+        pedido = { items: [{ ...pedido.items, ...cardapio.hamburguer }] };
+        console.log(pedido);
+        solicitarPedido();
+        break;
+      case 'cheesburguer':
+        pedido = { items: [{ ...pedido.items, ...cardapio.cheesburguer }] };
+        console.log(pedido);
+        solicitarPedido();
+        break;
+      case 'xbacon':
+        pedido = { items: [{ ...pedido.items, ...cardapio.xbacon }] };
+        console.log(pedido);
+        solicitarPedido();
+        break;
+      default:
+        finalizarPedido(pedido)
     }
-    else {
-      console.log('Infelizmente vou ficar te devendo')
-    }
-    questionInLoop();
   });
 };
-questionInLoop();
+
+solicitarPedido();
+
+function finalizarPedido(pedido) {
+  diminuirEstoque(pedido);
+  pedidoFinal(pedido);
+}
+
+
+function pedidoFinal(pedido) {
+  const temNoEstoque = verificarDisponibilidade(pedido);
+  if (temNoEstoque) {
+    console.log("o valor do seu pedido é R$", precoPedido(pedido));
+    console.log('Tudo bem, vou preparar seu pedido.')
+  }
+  else {
+    console.log('Infelizmente vou ficar te devendo')
+  }
+
+};
+
 function verificarDisponibilidade(pedido) {
   let disponivel = false;
   switch (pedido) {
@@ -118,7 +148,7 @@ function precoPedido(pedido) {
   let preco = 0;
   const valorHamburguer = cardapio.hamburguer.preco;
   const valorCheesburguer = cardapio.cheesburguer.preco;
-  const valorxBacon = cardapio.xbacon.preco;
+  const valorXbacon = cardapio.xbacon.preco;
   switch (pedido) {
     case 'hamburguer':
       preco = valorHamburguer;
@@ -127,21 +157,22 @@ function precoPedido(pedido) {
       preco = valorCheesburguer;
       break;
     case 'xbacon':
-      preco = valorxBacon;
+      preco = valorXbacon;
       break;
-      
+
   };
-return preco;
+  return preco;
 }
 function diminuirEstoque(pedido) {
-
-  estoque.comida.pao = cardapio[pedido].ingredientes.pao ? estoque.comida.pao - cardapio[pedido].ingredientes.pao : estoque.comida.pao;
-  estoque.comida.carne = cardapio[pedido].ingredientes.carne ? estoque.comida.carne - cardapio[pedido].ingredientes.carne : estoque.comida.carne;
-  estoque.comida.queijo = cardapio[pedido].ingredientes.queijo ? estoque.comida.queijo - cardapio[pedido].ingredientes.queijo : estoque.comida.queijo;
-  estoque.comida.bacon = cardapio[pedido].ingredientes.bacon ? estoque.comida.bacon - cardapio[pedido].ingredientes.bacon : estoque.comida.bacon;
-  estoque.comida.alface = cardapio[pedido].ingredientes.alface ? estoque.comida.alface - cardapio[pedido].ingredientes.alface : estoque.comida.alface;
-  estoque.comida.tomate = cardapio[pedido].ingredientes.tomate ? estoque.comida.tomate - cardapio[pedido].ingredientes.tomate : estoque.comida.tomate;
-
+  for (let i = 0; i < pedido.items.length; i++) {
+    console.log(pedido.items[i])
+    estoque.comida.pao = pedido.items[i].ingredientes.pao ? estoque.comida.pao - pedido.items[i].ingredientes.pao : estoque.comida.pao;
+    estoque.comida.carne = pedido.items[i].ingredientes.carne ? estoque.comida.carne - pedido.items[i].ingredientes.carne : estoque.comida.carne;
+    estoque.comida.queijo = pedido.items[i].ingredientes.queijo ? estoque.comida.queijo - pedido.items[i].ingredientes.queijo : estoque.comida.queijo;
+    estoque.comida.bacon = pedido.items[i].ingredientes.bacon ? estoque.comida.bacon - pedido.items[i].ingredientes.bacon : estoque.comida.bacon;
+    estoque.comida.alface = pedido.items[i].ingredientes.alface ? estoque.comida.alface - pedido.items[i].ingredientes.alface : estoque.comida.alface;
+    estoque.comida.tomate = pedido.items[i].ingredientes.tomate ? estoque.comida.tomate - pedido.items[i].ingredientes.tomate : estoque.comida.tomate;
+  }
 };
 
 
