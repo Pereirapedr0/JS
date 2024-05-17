@@ -73,17 +73,17 @@ async function solicitarPedido() {
   rl.question(`What's your order?`, pedidoAtual => {
     switch (pedidoAtual) {
       case 'hamburguer':
-        pedido = { items: [{ ...pedido.items, ...cardapio.hamburguer }] };
+        pedido = {items: [...pedido.items, {...cardapio.hamburguer}]};
         console.log(pedido);
         solicitarPedido();
         break;
       case 'cheesburguer':
-        pedido = { items: [{ ...pedido.items, ...cardapio.cheesburguer }] };
+        pedido = {items: [...pedido.items, {...cardapio.cheesburguer}]};
         console.log(pedido);
         solicitarPedido();
         break;
       case 'xbacon':
-        pedido = { items: [{ ...pedido.items, ...cardapio.xbacon }] };
+        pedido = {items: [...pedido.items, {...cardapio.xbacon}]};
         console.log(pedido);
         solicitarPedido();
         break;
